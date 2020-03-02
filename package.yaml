@@ -1,0 +1,33 @@
+descriptor-schema-version: "2.6"
+
+info:
+  name: "IOx_IR1101_GPIO_aarch64"
+  description: "Get GPIO status on IR1101"
+  version: "1.0"
+  author-link: "http://www.cisco.com"
+  author-name: "Emmanuel Tychon"
+
+app:
+  cpuarch: "aarch64"
+  type: docker
+  resources:
+    profile: c1.tiny
+    devices:
+      -
+        label: DIO_1
+        type: serial
+        usage: "GPIO Port 1"
+      -
+        label: DIO_2
+        type: serial
+        usage: "GPIO Port 2"
+      -
+        label: ASYNC0
+        type: serial
+        usage: "Serial Port"
+    network:
+      -
+        interface-name: "eth0"
+  startup:
+    rootfs: rootfs.tar
+    target: ["python","/startup.py"]

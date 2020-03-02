@@ -1,0 +1,2 @@
+docker build -t iox-ir1101-serial-dio .
+ioxclient docker package iox-ir1101-serial-dio . -n iox-ir1101-serial-dio-`date +"%Y%m%d-%H%M%S"`
