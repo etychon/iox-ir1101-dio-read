@@ -18,10 +18,6 @@ app:
         type: serial
         usage: "GPIO Port 1"
       -
-        label: DIO_2
-        type: serial
-        usage: "GPIO Port 2"
-      -
         label: ASYNC0
         type: serial
         usage: "Serial Port"

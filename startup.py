@@ -38,14 +38,28 @@ if __name__ == "__main__":
     logger.info('Starting application...')
 
     ports = serial.tools.list_ports.comports()
-    logger.info('Ports available:\n')
+    logger.info('Checking ports available:\n')
+    
+    port_list = ["/dev/ttyS0", "/dev/ttyS1", "/dev/ttySerial", "/dev/dio-1", "/dev/dio-2", "/dev/dio-3", "/dev/dio-4"]
+    
+    ok_ports = []
+    for port in port_list:
+        try:
+            s = serial.Serial(port)
+            s.close()
+            ok_ports.append(port)
+            logger.info(port + " available.")
+        except (OSError, serial.SerialException):
+            logger.info(port + " not available.")
+            pass
+    print(ok_ports)
     
     iter = 1000;
+    
     while (iter > 0):
         logger.info(">> Iteration:" + str(iter) + " <<")
-        for port, desc, hwid in sorted(ports):
-            portx = "+  {}: {} [{}]".format(port, desc, hwid)
-            logger.info(portx)
+        for port in ok_ports:
+            logger.info("+ " + port)
 
             try:
                 ser = serial.Serial(port)  # open serial port
