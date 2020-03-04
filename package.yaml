@@ -18,9 +18,17 @@ app:
         type: serial
         usage: "GPIO Port 1"
       -
-        label: ASYNC0
+        label: DIO_2
         type: serial
-        usage: "Serial Port"
+        usage: "GPIO Port 2"
+      -
+        label: DIO_3
+        type: serial
+        usage: "GPIO Port 3"
+      -
+        label: DIO_4
+        type: serial
+        usage: "GPIO Port 4"
     network:
       -
         interface-name: "eth0"

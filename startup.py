@@ -3,11 +3,13 @@
 # Made for Python 2.
 
 import os
-import sys
+#import sys
 import time
-import serial
+#import serial
 import logging
-import serial.tools.list_ports
+#import serial.tools.list_ports
+
+debug = False;
 
 if __name__ == "__main__":
 
@@ -37,8 +39,8 @@ if __name__ == "__main__":
 
     logger.info('Starting application...')
 
-    ports = serial.tools.list_ports.comports()
-    logger.info('Checking dio ports available:\n')
+    logger.info('Legend:\n  0 = dio contact closed,\n  1 = dio contact open,\n'+
+        '  - = dio port not available in this app')
     
     dio_port_list = [1,2,3,4]
 
@@ -47,18 +49,21 @@ if __name__ == "__main__":
     while (True):
         output = "";
         for dio_port in dio_port_list:
-            logger.info("+ GPIO port " + str(dio_port))
+            if debug:
+                logger.info("+ GPIO port " + str(dio_port))
             try:
                 with open("/dev/dio-"+str(dio_port), "r+b", 0) as c:
                     c_read = c.read()
                     output = output+c_read
-                    logger.info("  value ->" + c_read)
+                    if debug:
+                        logger.info("  value ->" + c_read)
             except:
                 output = output+'-'
-                logger.info(str(dio_port) + "  -> N/A")
+                if debug:
+                    logger.info(str(dio_port) + "  -> N/A")
                 pass
 
-        logger.info("GPIO port " + "".join(str(x) for x in dio_port_list) + " = " + output)
+        logger.info("GPIO port " + "[" + "".join(str(x) for x in dio_port_list) + "] = [" + output + "]")
 
         time.sleep(2)
                     
