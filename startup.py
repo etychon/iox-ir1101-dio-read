@@ -3,11 +3,8 @@
 # Made for Python 2.
 
 import os
-#import sys
 import time
-#import serial
 import logging
-#import serial.tools.list_ports
 
 debug = False;
 
