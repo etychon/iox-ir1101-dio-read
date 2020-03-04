@@ -13,7 +13,7 @@ if __name__ == "__main__":
 
     # Location of the directory to store log file, otherwise use /tmp
     log_file_dir = os.getenv("CAF_APP_LOG_DIR", "/tmp")
-    log_file_path = os.path.join(log_file_dir, "iox-serial.log")
+    log_file_path = os.path.join(log_file_dir, "iox-dio.log")
 
     # set up logging to file 
     logging.basicConfig( 
@@ -38,42 +38,28 @@ if __name__ == "__main__":
     logger.info('Starting application...')
 
     ports = serial.tools.list_ports.comports()
-    logger.info('Checking ports available:\n')
+    logger.info('Checking dio ports available:\n')
     
-    port_list = ["/dev/ttyS0", "/dev/ttyS1", "/dev/ttySerial", "/dev/dio-1", "/dev/dio-2", "/dev/dio-3", "/dev/dio-4"]
-    
-    ok_ports = []
-    for port in port_list:
-        try:
-            s = serial.Serial(port)
-            s.close()
-            ok_ports.append(port)
-            logger.info(port + " available.")
-        except (OSError, serial.SerialException):
-            logger.info(port + " not available.")
-            pass
-    print(ok_ports)
-    
-    iter = 1000;
-    
-    while (iter > 0):
-        logger.info(">> Iteration:" + str(iter) + " <<")
-        for port in ok_ports:
-            logger.info("+ " + port)
+    dio_port_list = [1,2,3,4]
 
+    # Triage all the dio ports that are working
+
+    while (True):
+        output = "";
+        for dio_port in dio_port_list:
+            logger.info("+ GPIO port " + str(dio_port))
             try:
-                ser = serial.Serial(port)  # open serial port
-                if (ser.inWaiting()>0):
-                    line = ser.readline() 
-                    logger.info('data: ' + line)         # check which port was really used
-                else:
-                    logger.info("no data on serial line")
+                with open("/dev/dio-"+str(dio_port), "r+b", 0) as c:
+                    c_read = c.read()
+                    output = output+c_read
+                    logger.info("  value ->" + c_read)
             except:
-                logger.info("Unexpected error:" + str(sys.exc_info()[1]))
-        iter = iter-1
-        if (iter>0):
-            time.sleep(2)
-                    
-    ser.close()             # close port
+                output = output+'-'
+                logger.info(str(dio_port) + "  -> N/A")
+                pass
 
+        logger.info("GPIO port " + "".join(str(x) for x in dio_port_list) + " = " + output)
+
+        time.sleep(2)
+                    
     logger.info("All done. Goodbye!\n")
