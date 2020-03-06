@@ -14,36 +14,126 @@ To know more about Digital I/O ports refer to the [IR1101 hardware guide](https:
 
 Only Digital I/O ports on the IRM-1100-SPMI extension module are supported in Cisco IOx. The alarm port of the base IR1101 chassis is not supported in IOx at the time of writing (Cisco IOS-XE 17.2.1). The alarm port on the base chassis is input only and can be used is Cisco IOS-XE.
 
+## Use Case Description
+
+This IOx application is able to read the status of the 4 Digital I/O ports. In this particular case, the application will log the status of the 4 ports in a log file, accessible from Cisco IOx Local Manager.
+
+In practice you may want to send that status to an external MQTT broker, an REST API or otherwise trigger local actions.
+
 ## Prerequisites
 
-* Cisco IR1101 with the SPMI expansion module. This module has 4 general-purpose input/output (GPIO) ports.
-* Development machine with Docker, ioxclient, and internet access.
-* Expose GPIO ports to Cisco IOx
+* Cisco IR1101 with the IRM-1100-SPMI expansion module. This module has the four Digital I/O ports that will be monitored.
+* Cisco IOx Application Hosting must be enabled [as explained in the IR1101 IOx Application Hosting documentation](https://www.cisco.com/c/en/us/td/docs/routers/access/1101/software/configuration/guide/b_IR1101config/b_IR1101config_chapter_010001.html).
+* Development machine with Git, Docker, [ioxclient](https://developer.cisco.com/docs/iox/#!iox-resource-downloads), and internet access.
+* Expose Digital I/O ports to Cisco IOx (see below)
 
-Cisco IR1101 GPIO ports are usable in Cisco IOS-XE for example using the Embedded Event Manager (EEM), however to be usable with Cisco IOx the ports will need to tbe exposed to IOx CAF framework using this configuration command in Cisco IOS-XE:
+Cisco IR1101 Digital I/O ports are usable directly in Cisco IOS-XE for example using the Embedded Event Manager (EEM), however to be usable with Cisco IOx the ports will need to be exposed to IOx CAF framework using this configuration command in Cisco IOS-XE:
 
-    SPARROW-UUT1# config terminal
-    SPARROW-UUT1(config)# alarm contact attach-to-iox
-    SPARROW-UUT1(config)# end
+    ir1101# config terminal
+    ir1101(config)# alarm contact attach-to-iox
+    ir1101(config)# end
 
+You can check the port status using the CLI command "show alarm" and make sure the ports are "Attached to IOx" as shown below:
 
+    ir1101#sh alarm
+    Alarm contact 0:
+       Description: External alarm contact on mother board
+       Status:      Asserted
+       Application: Dry
+       Severity:    Minor
+       Trigger:     Closed
+       Mode:        Input
 
-## How this works?
+    Digital I/O 1:
+       Attached to IOX.
 
-Under IOx, the GPIO ports are exposed as char devices under the device names /dev/dio-1 up to /dev/dio-4. The ports will need to be assigned to the running IOx application at activation time using an activation payload or Cisco IOx local manager like so:
+    Digital I/O 2:
+       Attached to IOX.
+
+    Digital I/O 3:
+       Attached to IOX.
+
+    Digital I/O 4:
+       Attached to IOX.
+
+## Building the application
+
+Here are the steps to build the IOx application, alternatively you can also check the [precompiled releases with ready-to-run IOx application](https://github.com/etychon/iox-ir1101-dio-read/releases).
+
+Start by cloning the repository:
+
+    $ git clone https://github.com/etychon/iox-ir1101-dio-read.git
+
+Enter the directory and launch the build:
+
+    $ cd iox-ir1101-dio-read/
+    $ ./build
+
+If the build is successful you should have an IOx application with a file name `iox-ir1101-dio-<date>-<time>.tar` in your directory. For example `iox-ir1101-dio-20200306-073253.tar`.
+
+The `build` command essentially does two things:
+
+* It builds the Docker image with
+      docker build -t iox-ir1101-dio .
+
+* It builds an IOx image based on the Docker container with:
+      ioxclient docker package iox-ir1101-dio . -n iox-ir1101-dio-\`date +"%Y%m%d-%H%M%S"\`
+
+## Installation
+
+Log in to Cisco IOx Local Manager and simply click on "Add New" application and select the TAR file you've just created.
+
+![Add new app](images/iox-add-new.png)  
+*Adding a new application in IOx*
+
+## Activation
+
+Under IOx, the Digital I/O ports are exposed as char devices under the device names /dev/dio-1 up to /dev/dio-4. The ports will need to be assigned as serial ports to the running IOx application at activation time using Cisco IOx local manager.
+
+In IOx Local Manager click the `Activate` button and assign all Digital I/O ports like so:
+
+![select dio](images/iox-lm-select-dio-ports.gif)
+
+If your application do not need all the Digital I/O ports, this can be easily edited in the `package.yaml` file. If you'd like to know more about the options offered by `package.yaml` please check the DevNet documentation on [Package Descriptors](https://developer.cisco.com/docs/iox/#!package-descriptor).
+
+In `package.yaml` the Digital I/O that are are not needed can be removed under the following section and then rebuild the application:
+
+      resources:
+        profile: c1.tiny
+        devices:
+          -
+            label: DIO_1
+            type: serial
+            usage: "GPIO Port 1"
+          -
+            label: DIO_2
+            type: serial
+            usage: "GPIO Port 2"
+          -
+            label: DIO_3
+            type: serial
+            usage: "GPIO Port 3"
+          -
+            label: DIO_4
+            type: serial
+            usage: "GPIO Port 4"
+
+If all four Digital I/O are configured, it should look like this in Cisco IOx Local Manager:
 
 ![local_mgr_dio_ports](images/local_mgr_dio_ports.png)
 *DIO ports are to be assigned to the software DIO ports*
 
-In addition, for IOx local manager to list the ports, they also need to be present in the package.yaml. If you don't know or understand how to do this please check the DevNet documentation on [Package Descriptors](https://developer.cisco.com/docs/iox/#!package-descriptor).
+Click on the upper right `Activate App` button, then go back to the application list and select `Start`, like so:
 
-In this example, the Python script `startup.py`will parse all possible DIO port numbers, and deliver a status for each of them. Three states are possible:
+![activate and start](images/iox-activate-and-start.gif)
 
-* 0 : the contact on this port is closed
-* 1 : the contact on this port is open
-* - : The Python script cannot find this port because it has not been activated / exposed to the running application
+The application is now running and the Python script `startup.py` will now parse all possible Digital I/O and deliver a status for each of them. Three states are possible:
 
-When the application runs, check the IOx application logs (in Local Manager) and you should see something like:
+* `0` : the contact on this port is closed
+* `1` : the contact on this port is open
+* `-` : The Python script cannot find this port because it has not been activated for the running application
+
+In Cisco IOx Local Manager click on your application `Manage` option and navigate to the `Logs` tab. A file called `iox-dio.log` created by the Python script should be there listing the Digital I/O status like so:
 
 ![app_log](images/app_log.png)
 *Applicaton Log as seen in Local Manager "logs"*
@@ -68,9 +158,3 @@ If you want to play with the DIO ports manually, you can launch this IOx applica
 You can request a console to the container from IOS-XE with command such as this one where you'll replace <application_name> by your IOx application name:
 
     IR1101# app-hosting connect appid <application_name> session /bin/bash
-
-## Packaging
-
-This application is build as a Docker container, and you can use the "./build" command to build the IOx application.
-
-Alternatively you can also check our precompiled releases with ready-to-run IOx application.
