@@ -74,10 +74,12 @@ If the build is successful you should have an IOx application with a file name `
 The `build` command essentially does two things:
 
 * It builds the Docker image with
-      docker build -t iox-ir1101-dio .
+
+    docker build -t iox-ir1101-dio .
 
 * It builds an IOx image based on the Docker container with:
-      ioxclient docker package iox-ir1101-dio . -n iox-ir1101-dio-\`date +"%Y%m%d-%H%M%S"\`
+
+    ioxclient docker package iox-ir1101-dio . -n iox-ir1101-dio-\`date +"%Y%m%d-%H%M%S"\`
 
 ## Installation
 
