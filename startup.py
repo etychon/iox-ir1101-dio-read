@@ -1,5 +1,7 @@
 #!/usr/bin/env python
 
+# Copyright (c) 2020 Cisco Systems, Inc. and/or its affiliates
+
 # Made for Python 2.
 
 import os
@@ -14,31 +16,31 @@ if __name__ == "__main__":
     log_file_dir = os.getenv("CAF_APP_LOG_DIR", "/tmp")
     log_file_path = os.path.join(log_file_dir, "iox-dio.log")
 
-    # set up logging to file 
-    logging.basicConfig( 
+    # set up logging to file
+    logging.basicConfig(
         filename=log_file_path,
-        level=logging.INFO, 
-        format='[%(asctime)s]{%(pathname)s:%(lineno)d}%(levelname)s- %(message)s', 
+        level=logging.INFO,
+        format='[%(asctime)s]{%(pathname)s:%(lineno)d}%(levelname)s- %(message)s',
         datefmt='%H:%M:%S'
-    ) 
+    )
 
-    # set up logging to console 
-    console = logging.StreamHandler() 
-    console.setLevel(logging.DEBUG) 
+    # set up logging to console
+    console = logging.StreamHandler()
+    console.setLevel(logging.DEBUG)
 
-    # set a format which is simpler for console use 
+    # set a format which is simpler for console use
     formatter = logging.Formatter('%(name)-12s: %(levelname)-8s %(message)s')
-    console.setFormatter(formatter) 
+    console.setFormatter(formatter)
 
-    # add the handler to the root logger 
-    logging.getLogger('').addHandler(console) 
+    # add the handler to the root logger
+    logging.getLogger('').addHandler(console)
     logger = logging.getLogger(__name__)
 
     logger.info('Starting application...')
 
     logger.info('Legend:\n  0 = dio contact closed,\n  1 = dio contact open,\n'+
         '  - = dio port not available in this app')
-    
+
     dio_port_list = [1,2,3,4]
 
     # Triage all the dio ports that are working
@@ -63,5 +65,5 @@ if __name__ == "__main__":
         logger.info("GPIO port " + "[" + "".join(str(x) for x in dio_port_list) + "] = [" + output + "]")
 
         time.sleep(2)
-                    
+
     logger.info("All done. Goodbye!\n")
