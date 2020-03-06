@@ -1,5 +1,19 @@
 # Read digital IO (Alarm) status on Cisco IR1101 using Cisco IOx with Python
 
+This application runs on Cisco IR1101 with Cisco IOx. It reads the status of the Digital Input/Output port (sometimes referred to as General Purpose Input/Output or GPIO) available on the router's IRM-1100-SPMI expansion module.
+
+![gpio](images/ir1101-dio-port.jpg)  
+*Digital I/O port shown here*
+
+The Digital I/O connector has 4 GPIO connections plus 1 Return connection. The Digital I/O supports Both Dry and Wet contacts up to 60Volts.
+
+* Dry contact is isolated from a voltage source (or “No Volt”), with an embedded relay function (NPN transistor), usually used to indicate an event. For example: open/close, alarm.
+* Wet contact is a contact with external power (+3.3V to +60V, max 150mA of current allowed at high voltage) applied, usually used to energize something. For example: solenoid, light.
+
+To know more about Digital I/O ports refer to the [IR1101 hardware guide](https://www.cisco.com/c/en/us/td/docs/routers/access/1101/b_IR1101HIG/b_IR1101HIG_chapter_01.html#con_1232292).
+
+Only Digital I/O ports on the IRM-1100-SPMI extension module are supported in Cisco IOx. The alarm port of the base IR1101 chassis is not supported in IOx at the time of writing (Cisco IOS-XE 17.2.1). The alarm port on the base chassis is input only and can be used is Cisco IOS-XE.
+
 ## Prerequisites
 
 * Cisco IR1101 with the SPMI expansion module. This module has 4 general-purpose input/output (GPIO) ports.
@@ -12,7 +26,7 @@ Cisco IR1101 GPIO ports are usable in Cisco IOS-XE for example using the Embedde
     SPARROW-UUT1(config)# alarm contact attach-to-iox
     SPARROW-UUT1(config)# end
 
-Only GPIO ports on the extension module are supported in Cisco IOx. The alarm port of the base IR1101 chassis is not supported at the time of writing (Cisco IOS-XE 17.2.1).
+
 
 ## How this works?
 
