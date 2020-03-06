@@ -98,25 +98,27 @@ If your application do not need all the Digital I/O ports, this can be easily ed
 
 In `package.yaml` the Digital I/O that are are not needed can be removed under the following section and then rebuild the application:
 
-      resources:
-        profile: c1.tiny
-        devices:
-          -
-            label: DIO_1
-            type: serial
-            usage: "GPIO Port 1"
-          -
-            label: DIO_2
-            type: serial
-            usage: "GPIO Port 2"
-          -
-            label: DIO_3
-            type: serial
-            usage: "GPIO Port 3"
-          -
-            label: DIO_4
-            type: serial
-            usage: "GPIO Port 4"
+```
+    resources:
+      profile: c1.tiny
+      devices:
+        -
+          label: DIO_1
+          type: serial
+          usage: "GPIO Port 1"
+        -
+          label: DIO_2
+          type: serial
+          usage: "GPIO Port 2"
+        -
+          label: DIO_3
+          type: serial
+          usage: "GPIO Port 3"
+        -
+          label: DIO_4
+          type: serial
+          usage: "GPIO Port 4"
+```
 
 If all four Digital I/O are configured, it should look like this in Cisco IOx Local Manager:
 
@@ -142,7 +144,7 @@ In Cisco IOx Local Manager click on your application `Manage` option and navigat
 
 If you want to play with the DIO ports manually, you can launch this IOx application and then request an IOx console which will let you play with the following commands:
 
-`
+```
     # To change pin to input mode
     echo in > /dev/dio-1
  
@@ -155,7 +157,7 @@ If you want to play with the DIO ports manually, you can launch this IOx applica
     # To update pin value
     echo 1 > /dev/dio-1
     echo 0 > /dev/dio-1
-`
+```
 
 You can request a console to the container from IOS-XE with command such as this one where you'll replace <application_name> by your IOx application name:
 
