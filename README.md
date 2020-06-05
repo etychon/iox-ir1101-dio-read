@@ -2,7 +2,7 @@
 
 This application runs on Cisco IR1101 with Cisco IOx. It reads the status of the Digital Input/Output port (sometimes referred to as General Purpose Input/Output or GPIO) available on the router's IRM-1100-SPMI expansion module.
 
-![gpio](images/ir1101-dio-port.jpg)  
+![gpio](images/ir1101-dio-port.jpg)
 *Digital I/O port shown here*
 
 The Digital I/O connector has 4 GPIO connections plus 1 Return connection. The Digital I/O supports Both Dry and Wet contacts up to 60Volts.
@@ -85,7 +85,7 @@ The `build` command essentially does two things:
 
 Log in to Cisco IOx Local Manager and simply click on "Add New" application and select the TAR file you've just created.
 
-![Add new app](images/iox-add-new.png)  
+![Add new app](images/iox-add-new.png)
 *Adding a new application in IOx*
 
 ## Activation
@@ -156,9 +156,12 @@ If you want to play with the DIO ports manually, you can launch this IOx applica
     # To read pin value
     cat /dev/dio-1
  
-    # To update pin value
+    # To update pin value (up / down)
     echo 1 > /dev/dio-1
     echo 0 > /dev/dio-1
+
+    # To read the pin status (Mode, State, Current voltage, Threshold)
+    cat /proc/dio-status
 ```
 
 You can request a console to the container from IOS-XE with command such as this one where you'll replace <application_name> by your IOx application name:
