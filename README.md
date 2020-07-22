@@ -149,19 +149,46 @@ If you want to play with the DIO ports manually, you can launch this IOx applica
 ```
     # To change pin to input mode
     echo in > /dev/dio-1
- 
-    # To change pin to output mode
-    echo out > /dev/dio-1
- 
+
     # To read pin value
     cat /dev/dio-1
  
+    # To change pin to output mode
+    echo out > /dev/dio-1
+  
     # To update pin value (up / down)
     echo 1 > /dev/dio-1
     echo 0 > /dev/dio-1
+```
 
+```
     # To read the pin status (Mode, State, Current voltage, Threshold)
     cat /proc/dio-status
+
+    Digital IO Emulation v1.0
+
+    dio-1 Status:
+            Mode            =       OUTPUT
+            State           =       1
+
+    dio-2 Status:
+            Mode            =       INPUT
+            State           =       1
+            Cur voltage     =       3362 mV
+            Threshold       =       1600 mV
+
+    dio-3 Status:
+            Mode            =       INPUT
+            State           =       1
+            Cur voltage     =       3362 mV
+            Threshold       =       1600 mV
+
+    dio-4 Status:
+            Mode            =       INPUT
+            State           =       1
+            Cur voltage     =       3368 mV
+            Threshold       =       1600 mV
+
 ```
 
 Note that in output mode the status can only be `on` (1) or `off` (0). The respective DIO port will exhibit a tension of at least 2.5V when on, and at most 0.4V when off.
