@@ -164,6 +164,16 @@ If you want to play with the DIO ports manually, you can launch this IOx applica
     cat /proc/dio-status
 ```
 
-You can request a console to the container from IOS-XE with command such as this one where you'll replace <application_name> by your IOx application name:
+Note that in output mode the status can only be `on` (1) or `off` (0). The respective DIO port will exhibit a tension of at least 2.5V when on, and at most 0.4V when off.
+
+Output mode can also act as a *switch* if you apply some current, but make sure to limit the current to 200mA maximum and the tension shall be more than 3.3V but below 60V.
+
+All the details on port level/voltage are listed on [IR1101 Digital IO Documentation](https://www.cisco.com/c/en/us/td/docs/routers/access/1101/b_IR1101HIG/b_IR1101HIG_chapter_01.html#con_1232292) on Cisco's website.
+
+## Application Console
+
+If you want to play with commands directory on the container shell, remember that you can always request a console to the container from IOS-XE with command such as this one where you'll replace `<application_name>`` by your IOx application name:
 
     IR1101# app-hosting connect appid <application_name> session /bin/bash
+
+Note that on IOS-XE platforms you *cannot* use `ioxclient application console` command to access the application console like on all other platforms.
